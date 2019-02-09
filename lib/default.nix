@@ -1,8 +1,13 @@
 { pkgs }:
 
-with pkgs.lib; {
-  # Add your library functions here
-  #
-  # hexint = x: hexvals.${toLower x};
+with pkgs; {
+  collectionWith = {name, inputs, shellHook ? "", vars ? {}}:
+    let
+      shell = mkShell {
+        name="${name}-collection";
+        buildInputs=inputs;
+        inherit shellHook;
+        env = buildEnv {inherit name; paths = inputs;};
+      } // vars;
+    in if lib.inNixShell then shell else shell.env;
 }
-
